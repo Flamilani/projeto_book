@@ -179,7 +179,6 @@ var Main = React.createClass({
     $.get("https://www.googleapis.com/books/v1/volumes?q=intitle:" + encodeURIComponent(search) + "&printType=books&orderBy=newest&maxResults=39", function (data) {
 
       component.setState(data);
-      bookshelf();
 
       $(".front").css("background", "url(img/no_book_cover.jpg)");
 
