@@ -206,25 +206,6 @@ var Main = React.createClass({
 
     this.setState({ items: [] });
     var component = this;
-
-    $.get("https://www.googleapis.com/books/v1/volumes?q=intitle:" + encodeURIComponent(search) + "&printType=books&orderBy=newest&maxResults=39", function (data) {
-
-      component.setState(data);
-      bookshelf();
-
-      $(".front").css("background", "url(img/no_book_cover.jpg)");
-
-      for (var i = 0; i < component.state.items.length; i++) {
-        if (component.state.items[i].volumeInfo.imageLinks != null) {
-
-          $("#book-" + component.state.items[i].id).find(".front").css("background", "url(" + component.state.items[i].volumeInfo.imageLinks.thumbnail + ")");
-        }
-      }
-
-      $(".front").css("background-size", "100% 100%");
-      $(".front").css("border", "2px solid #eee");
-      $(".front").css("background-size", "100% 100%");
-    });
   },
 
   render: function () {
