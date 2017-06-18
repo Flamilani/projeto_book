@@ -1,5 +1,18 @@
 var Header = React.createClass({
 
+  render: function() {
+    return(
+      <myElement>
+        <Nav linkUrl="index.html" title="Projeto Books API" />           
+      </myElement>
+    )
+  }
+});
+
+
+
+var Search = React.createClass({
+
   handleSubmit : function (e) {
     e.preventDefault();
     var input = ReactDOM.findDOMNode(this.refs.search);
@@ -15,47 +28,26 @@ var Header = React.createClass({
     return (
 
      
-				<div>
-					<form className="form-inline" style={{marginTop: 30 + 'px'}} onSubmit={this.handleSubmit}>
-            <div className="form-group">
-						        <input className="form-control" placeholder="Título do Livro" ref="search"/>
-						              <button className="btn btn-default"><span className="glyphicon glyphicon-search"></span></button>
-            </div>
-					</form>
-				</div>
-			
+        <div className="container">             
+          <form onSubmit={this.handleSubmit}>           
+                 <div className="col-lg-1">
+                  <Title>
+              Pesquisa:   
+              </Title>
+              </div>
+                   <div className="col-lg-6"> 
+                    <input className="form-control" placeholder="Título do Livro" ref="search"/>
+                    </div>
+                    <div className="col-lg-2">  
+                          <button className="btn btn-primary"> <span className="glyphicon glyphicon-search"></span> Buscar Livro</button>
+                          </div>
+           
+          </form>
+        </div>
+      
 
     );
   }
-});
-
-var Footer = React.createClass({
-
-  render : function () {
-
-    return(
-
-      <div className="related">
-        <p>Created by :<a href="https://twitter.com/fethica" style={{color: '#FFF'}} target="_blank">Fethi El Hassasna</a></p>
-				<a href="http://tympanus.net/codrops/2014/01/14/look-inside-book-preview-with-bookblock/" target="_blank">
-					<img src="img/bookpreview.png" />
-					<h3>Book Preview</h3>
-				</a>
-				<a href="http://facebook.github.io/react/" target="_blank">
-					<img src="img/react.png" />
-					<h3>React JS</h3>
-				</a>
-				<a href="https://developers.google.com/books/?hl=en" target="_blank">
-					<img src="img/googlebooks.png" />
-					<h3>Google Books API</h3>
-				</a>
-
-			</div>
-
-    );
-
-  }
-
 });
 
 var Books = React.createClass({
@@ -99,9 +91,10 @@ var Books = React.createClass({
 
     return (
 
+
+  
       <figure>
-        <div className="book" id={id}></div>
-        <div className="buttons"><a href={this.state.previewLink} target="_blank">Preview</a><a href="#">Details</a></div>
+        <div className="buttons"><a href={this.state.previewLink} target="_blank">Ver Livro</a></div>
         <figcaption><h2>{this.state.title}<span>{authors}</span></h2></figcaption>
         <div className="details">
           <ul>
@@ -129,7 +122,24 @@ var Main = React.createClass({
     this.setState({items: []});
     var component = this;
 
+    $.get("https://www.googleapis.com/books/v1/volumes?q=intitle:" + encodeURIComponent(search) + "&printType=books&orderBy=newest&maxResults=39", function (data) {
 
+      component.setState(data);      
+
+      $(".front").css("background", "url(img/no_book_cover.jpg)");
+
+      for (var i = 0; i < component.state.items.length; i++) {
+        if (component.state.items[i].volumeInfo.imageLinks != null) {
+
+          $("#book-" + component.state.items[i].id).find(".front").css("background", "url("+ component.state.items[i].volumeInfo.imageLinks.thumbnail +")");
+        }
+      }
+
+      $(".front").css("background-size", "100% 100%");
+      $(".front").css("border", "2px solid #eee");
+      $(".front").css("background-size", "100% 100%");
+
+    });
 
   },
 
@@ -142,16 +152,18 @@ var Main = React.createClass({
     });
 
     if (books.length > 0) {
-      content = books;
+      content = <Result> Resultado: {books} </Result>;  
+     
     } else {
       content = <div className="search-icon"><span className="glyphicon glyphicon-search"></span></div>
     }
 
     return (
       <div>
-      <Header localSubmit={this.localSubmit}/>
+      <Header />
+      <Search localSubmit={this.localSubmit}/>
         <div className="main">
-  				<div id="bookshelf" className="bookshelf">
+          <div id="bookshelf" className="bookshelf">
             {content}
           </div>
         </div>
@@ -163,4 +175,8 @@ var Main = React.createClass({
 
 });
 
-ReactDOM.render(<Main />, document.getElementById("scroll-wrap"));
+
+  ReactDOM.render(
+        <Main />,
+        document.getElementById('search')
+ );
